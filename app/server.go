@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os"
@@ -22,11 +23,14 @@ func main() {
 		os.Exit(1)
 	}
 	defer c.Close()
+	
+	w := bufio.NewWriter(c)
 
 	for {
-		if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
-			fmt.Println("Error writing to connection", err.Error())
+		if _, err := w.Write([]byte("+PONG\r\n")); err != nil {
+			fmt.Println("Error writing to conn", err.Error())
 			os.Exit(1)
 		}
+		w.Flush()
 	}
 }
