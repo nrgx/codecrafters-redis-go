@@ -29,6 +29,5 @@ func main() {
 			fmt.Println("Error writing to connection", err.Error())
 			os.Exit(1)
 		}
-		fmt.Println("Responded", n, "bytes")
 	}
 }
