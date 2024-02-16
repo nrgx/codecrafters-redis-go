@@ -15,12 +15,17 @@ func main() {
 		os.Exit(1)
 	}
 	defer l.Close()
-	c, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
+	for {
+		c, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			os.Exit(1)
+		}
+		pong(c)
 	}
-	defer c.Close()
-	c.Write([]byte("+PONG\r\n"))
-	fmt.Println("Responded")
+}
+
+func pong(conn net.Conn) {
+	// defer conn.Close()
+	conn.Write([]byte("+PONG\r\n"))
 }
