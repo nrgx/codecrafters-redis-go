@@ -17,15 +17,10 @@ func main() {
 	defer l.Close()
 
 	c, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
-	}
-	defer c.Close()
-	
+
 	for {
 		if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
-			continue
+			break
 		}
 	}
 }
