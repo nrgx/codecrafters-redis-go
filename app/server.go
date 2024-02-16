@@ -22,12 +22,13 @@ func main() {
 		os.Exit(1)
 	}
 	defer c.Close()
+
 	for {
-		// buf := make([]byte, 1024)
-		// if _, err := c.Read(buf); err != nil {
-		//	fmt.Println("Error reading from connection", err.Error())
-		//	os.Exit(1)
-		// }
-		c.Write([]byte("+PONG\r\n"))
+		n, err := c.Write([]byte("+PONG\r\n"))
+		if err != nil {
+			fmt.Println("Error writing to connection", err.Error())
+			os.Exit(1)
+		}
+		fmt.Println("Responded", n, "bytes")
 	}
 }
