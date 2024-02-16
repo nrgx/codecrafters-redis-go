@@ -21,13 +21,8 @@ func main() {
 		fmt.Println("Error accepting connection: ", err.Error())
 		os.Exit(1)
 	}
-	defer c.Close()
 
 	for {
-		n, err := c.Write([]byte("+PONG\r\n"))
-		if err != nil {
-			fmt.Println("Error writing to connection", err.Error())
-			os.Exit(1)
-		}
+		c.Write([]byte("+PONG\r\n"))
 	}
 }
