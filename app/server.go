@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -24,10 +25,14 @@ func main() {
 }
 
 func handle(c net.Conn) {
-	defer c.Close()
+	// if I close connection it's gonna be EOF or reset by peer
+	// if I don't close connectio it's gonna be i/o timeout
+	// wtf?
+
+	// defer c.Close()
 	buf := make([]byte, 1024)
 	n, err := c.Read(buf)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		fmt.Println("error reading from connection", err.Error())
 		os.Exit(1)
 	}
