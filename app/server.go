@@ -17,6 +17,7 @@ func main() {
 	defer listener.Close()
 
 	for {
+		fmt.Println("Start")
 		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection", err.Error())
@@ -32,5 +33,6 @@ func main() {
 			fmt.Println("Error writing to connection", err.Error())
 			os.Exit(1)
 		}
+		fmt.Println("Finish")
 	}
 }
