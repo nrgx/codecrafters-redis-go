@@ -37,7 +37,7 @@ func handle(c net.Conn) {
 		os.Exit(1)
 	}
 	fmt.Print(string(buf[8:n]))
-	if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
+	if _, err := c.Write([]byte("+PONG\r\n")); err != nil && err != io.EOF {
 		fmt.Println("error writing to connection", err.Error())
 		os.Exit(1)
 	}
