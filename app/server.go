@@ -7,37 +7,32 @@ import (
 )
 
 func main() {
-	fmt.Println("Logs from your program will appear here!")
-
 	listener, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
-		fmt.Println("Failed to bind to port 6379")
+		fmt.Println("error creating tcp server", err.Error())
 		os.Exit(1)
 	}
-	defer listener.Close()
-
 	for {
-		fmt.Println("Start")
+		// this blocks loop
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error accepting connection", err.Error())
+			fmt.Println("error accepting connection", err.Error())
 			os.Exit(1)
 		}
-		defer func(){
-			if err := conn.Close(); err != nil {
-				fmt.Println("Error closing connection", err.Error())
-			}
-		}()
 		buf := make([]byte, 1024)
-		if _, err := conn.Read(buf); err != nil {
-			fmt.Println("Error reading from connection", err.Error())
+		n, err := conn.Read(buf)
+		if err != nil {
+			fmt.Println("error reading from connection", err.Error())
 			os.Exit(1)
 		}
+		// first 8 bytes are header
+		// fmt.Println(string(buf[8:n]))
 		buf = []byte("+PONG\r\n")
 		if _, err := conn.Write(buf); err != nil {
-			fmt.Println("Error writing to connection", err.Error())
+			fmt.Println("error writing to connection", err.Error())
 			os.Exit(1)
 		}
-		fmt.Println("Finish")
+		conn.Close()
 	}
 }
+
