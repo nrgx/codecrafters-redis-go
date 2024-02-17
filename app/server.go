@@ -37,7 +37,7 @@ func main() {
 				fmt.Println("error writing to connection", err.Error())
 				os.Exit(1)
 			}
+			conn.Close()
 		}()
-		// conn.Close()
 	}
 }
