@@ -24,20 +24,21 @@ func main() {
 			fmt.Println("error accepting connection", err.Error())
 			os.Exit(1)
 		}
-		go func(conn net.Conn) {
+		go func(c net.Conn) {
 			buf := make([]byte, 1024)
-			if _, err := conn.Read(buf); err != nil {
+			n, err := c.Read(buf)
+			if err != nil {
 				fmt.Println("error reading from connection", err.Error())
 				os.Exit(1)
 			}
 			// first 8 bytes are header
-			// fmt.Println(string(buf[8:n]))
+			fmt.Println(string(buf[8:n]))
 			buf = []byte("+PONG\r\n")
-			if _, err := conn.Write(buf); err != nil {
+			if _, err := c.Write(buf); err != nil {
 				fmt.Println("error writing to connection", err.Error())
 				os.Exit(1)
 			}
-			conn.Close()
+			c.Close()
 		}(conn)
 	}
 }
