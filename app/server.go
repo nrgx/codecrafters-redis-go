@@ -17,16 +17,23 @@ func main() {
 		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("error establishing connection", err.Error())
-			os.Exit(1)
+			continue
 		}
 		go handle(conn)
 	}
 }
 
 func handle(c net.Conn) {
+	defer c.Close()
+	buf := make([]byte, 1024)
+	n, err := c.Read(buf)
+	if err != nil {
+		fmt.Println("error reading from connection", err.Error())
+		os.Exit(1)
+	}
+	fmt.Print(string(buf[8:n]))
 	if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
 		fmt.Println("error writing to connection", err.Error())
 		os.Exit(1)
 	}
-	c.Close()
 }
