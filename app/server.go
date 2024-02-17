@@ -24,7 +24,7 @@ func main() {
 			fmt.Println("error accepting connection", err.Error())
 			os.Exit(1)
 		}
-		go func() {
+		go func(conn net.Conn) {
 			buf := make([]byte, 1024)
 			if _, err := conn.Read(buf); err != nil {
 				fmt.Println("error reading from connection", err.Error())
@@ -38,6 +38,6 @@ func main() {
 				os.Exit(1)
 			}
 			conn.Close()
-		}()
+		}(conn)
 	}
 }
