@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+var pong = []byte("+PONG\r\n")
+
 func main() {
 	listener, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
@@ -21,21 +23,25 @@ func main() {
 			continue
 		}
 		fmt.Println("connection established")
-		buf := make([]byte, 1024)
-		fmt.Println("reading")
-		if _, err := conn.Read(buf); err != nil {
-			fmt.Println("error reading from connection", err.Error())
-			continue
-		}
-		fmt.Println("read")
-		payload := []byte("+PONG\r\n")
-		fmt.Println("writing")
-		if _, err := conn.Write(payload); err != nil {
-			fmt.Println("error writing to connection", err.Error())
-			continue
-		}
-		fmt.Println("wrote")
-		conn.Close()
-		fmt.Println("======closing======\n")
+		go handle(conn)
 	}
+}
+
+func handle(conn net.Conn) {
+	buf := make([]byte, 1024)
+	fmt.Println("reading")
+	if _, err := conn.Read(buf); err != nil {
+		fmt.Println("error reading from connection", err.Error())
+		os.Exit(1)
+	}
+	fmt.Println("read")
+
+	fmt.Println("writing")
+	if _, err := conn.Write(pong); err != nil {
+		fmt.Println("error writing to connection", err.Error())
+		os.Exit(1)
+	}
+	fmt.Println("wrote")
+	conn.Close()
+	fmt.Println("======closing======\n")
 }
