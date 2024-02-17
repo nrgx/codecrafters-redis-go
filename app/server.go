@@ -24,6 +24,9 @@ func main() {
 }
 
 func handle(c net.Conn) {
-	// defer c.Close()
-	c.Write([]byte("+PONG\r\n"))
+	if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
+		fmt.Println("error writing to connection", err.Error())
+		os.Exit(1)
+	}
+	c.Close()
 }
