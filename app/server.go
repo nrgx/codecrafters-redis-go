@@ -28,9 +28,9 @@ func main() {
 			continue
 		}
 		fmt.Println("read")
-		buf = []byte("+PONG\r\n")
+		payload := []byte("+PONG\r\n")
 		fmt.Println("writing")
-		if _, err := conn.Write(buf); err != nil {
+		if _, err := conn.Write(payload); err != nil {
 			fmt.Println("error writing to connection", err.Error())
 			continue
 		}
