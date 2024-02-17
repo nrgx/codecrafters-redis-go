@@ -20,6 +20,7 @@ func main() {
 			fmt.Println("error establishing connection", err.Error())
 			continue
 		}
+		fmt.Println("connection established")
 		buf := make([]byte, 1024)
 		fmt.Println("reading")
 		if _, err := conn.Read(buf); err != nil {
@@ -35,6 +36,6 @@ func main() {
 		}
 		fmt.Println("wrote")
 		conn.Close()
-		fmt.Println("=====closing=====\n")
+		fmt.Println("======closing======\n")
 	}
 }
