@@ -16,16 +16,15 @@ func main() {
 	}
 	defer listener.Close()
 
-	conn, err := listener.Accept()
-	if err != nil {
-		fmt.Println("Error listening to server", err.Error())
-		os.Exit(1)
-	}
-	defer conn.Close()
-
 	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection", err.Error())
+			os.Exit(1)
+		}
 		buf := make([]byte, 1024)
-		if _, err := conn.Read(buf); err != nil {
+		n, err := conn.Read(buf)
+		if err != nil {
 			fmt.Println("Error reading from connection", err.Error())
 			os.Exit(1)
 		}
