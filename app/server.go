@@ -20,8 +20,7 @@ func main() {
 			os.Exit(1)
 		}
 		buf := make([]byte, 1024)
-		n, err := conn.Read(buf)
-		if err != nil {
+		if _, err := conn.Read(buf); err != nil {
 			fmt.Println("error reading from connection", err.Error())
 			os.Exit(1)
 		}
