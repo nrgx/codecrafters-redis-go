@@ -29,7 +29,7 @@ func handle(c net.Conn) {
 	// if I don't close connectio it's gonna be i/o timeout
 	// wtf?
 
-	// defer c.Close()
+	defer c.Close()
 	buf := make([]byte, 1024)
 	n, err := c.Read(buf)
 	if err != nil && err != io.EOF {
