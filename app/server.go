@@ -12,6 +12,7 @@ func main() {
 		fmt.Println("error creating tcp server", err.Error())
 		os.Exit(1)
 	}
+	defer listener.Close()
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -23,6 +24,6 @@ func main() {
 }
 
 func handle(c net.Conn) {
-	defer c.Close()
+	// defer c.Close()
 	c.Write([]byte("+PONG\r\n"))
 }
