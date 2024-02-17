@@ -12,25 +12,17 @@ func main() {
 		fmt.Println("error creating tcp server", err.Error())
 		os.Exit(1)
 	}
-
-	defer func() {
-		if err := listener.Close(); err != nil {
-			fmt.Println("error closing tcp server", err.Error())
-		}
-	}()
-
-	conn, err := listener.Accept()
-	if err != nil {
-		fmt.Println("error establishing connection", err.Error())
-		os.Exit(1)
-	}
 	for {
-		go func(c net.Conn) {
-			if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
-				fmt.Println("error writing to connection", err.Error())
-				os.Exit(1)
-			}
-		}(conn)
+		conn, err := listener.Accept()
+		if err != nil {
+			fmt.Println("error establishing connection", err.Error())
+			os.Exit(1)
+		}
+		go handle(conn)
 	}
-	c.Close()
+}
+
+func handle(c net.Conn) {
+	defer c.Close()
+	c.Write([]byte("+PONG\r\n"))
 }
