@@ -23,6 +23,11 @@ func main() {
 			fmt.Println("Error accepting connection", err.Error())
 			os.Exit(1)
 		}
+		defer func(){
+			if err := conn.Close(); err != nil {
+				fmt.Println("Error closing connection", err.Error())
+			}
+		}()
 		buf := make([]byte, 1024)
 		if _, err := conn.Read(buf); err != nil {
 			fmt.Println("Error reading from connection", err.Error())
