@@ -26,12 +26,11 @@ func main() {
 			os.Exit(1)
 		}
 		go func(c net.Conn) {
-			buf := []byte("+PONG\r\n")
-			if _, err := c.Write(buf); err != nil {
+			if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
 				fmt.Println("error writing to connection", err.Error())
 				os.Exit(1)
 			}
-			c.Close()
+			// c.Close()
 		}(conn)
 	}
 }
