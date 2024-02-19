@@ -27,14 +27,12 @@ func (v Value[V]) String() string {
 func newVal[V any](value V, expKey string, expiry int) Value[V] {
 	v := Value[V]{}
 	v.value = value
-	key := strings.ToUpper(expKey)
+	key := strings.ToLower(expKey)
 	var ttl time.Duration
-	if key == "PX" {
+	if key == "px" {
 		ttl = time.Duration(expiry) * time.Millisecond
-	} else if key == "EX" {
+	} else if key == "ex" {
 		ttl = time.Duration(expiry) * time.Second
-	} else {
-		ttl = 0
 	}
 	fmt.Println("TTL", ttl)
 	v.expiry = time.Now().Add(ttl)
