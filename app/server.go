@@ -66,15 +66,15 @@ func New[K comparable, V any]() *REDIS[K, V] {
 }
 
 func (r *REDIS[K, V]) get(k K, val string) []byte {
-	if val != "" {
-		return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(val), val))
-	}
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	fmt.Println("key:", k, "v,ok:", r.data[k])
 	v, ok := r.data[k]
 	if !ok {
 		fmt.Println("not ok", r.data[k])
+		if val != "" {
+			return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(val), val))
+		}
 		return NIL
 	}
 	length, err := getLen(v)
