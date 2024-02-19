@@ -55,7 +55,7 @@ func New[K comparable, V any]() *REDIS[K, V] {
 	}
 
 	go func() {
-		for {
+		for range time.Tick(1 * time.Second) {
 			redis.checkExpiry()
 		}
 	}()
