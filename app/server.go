@@ -78,11 +78,7 @@ func (r *REDIS[K, V]) get(k K, val string) []byte {
 	}
 	if v.isExpired() {
 		delete(r.data, k)
-		valLen, err := getLen(v.value)
-		if err != nil {
-			fmt.Println("error getting value length", err)
-		}
-		return []byte(fmt.Sprintf("$%d\r\n%s\r\n", valLen, v.value))
+		return NIL
 	}
 	return NIL
 }
