@@ -9,6 +9,13 @@ import (
 	"strings"
 )
 
+const (
+	PING = "ping"
+	ECHO = "echo"
+	GET  = "get"
+	SET  = "set"
+)
+
 var NIL = []byte("$-1\r\n")
 
 // Global map.
@@ -71,21 +78,14 @@ func parse(buf []byte) []byte {
 	}
 	fmt.Printf("commands: %q\n", commands)
 	switch strings.ToLower(string(commands[0])) {
-	case "ping":
+	case PING:
 		return pong()
-	case "echo":
+	case ECHO:
 		return echo(commands[1:])
-	case "get":
-		if len(commands) != 2 {
-			return NIL
-		}
-		return get(string(commands[1]))
-	case "set":
-		// there should be other args like `expiry` but for now just key and value
-		if len(commands) != 3 {
-			return NIL
-		}
-		return set(string(commands[1]), string(commands[2]))
+	case GET:
+		return get(commands[1:])
+	case SET:
+		return set(commands[1:])
 	}
 	return nil
 }
@@ -103,15 +103,31 @@ func echo(args [][]byte) []byte {
 	return buf.Bytes()
 }
 
-func get(k string) []byte {
-	value, ok := m[k]
-	if !ok {
+func get(args [][]byte) []byte {
+	if len(args) == 0 {
 		return NIL
 	}
-	return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(value), value))
+	k := string(args[0])
+	var v string
+	if len(args) == 2 {
+		v = string(args[1])
+		m[k] = v
+	} else {
+		val, ok := m[k]
+		if !ok {
+			return NIL
+		}
+		v = val
+	}
+	return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(v), v))
 }
 
-func set(k, v string) []byte {
+func set(args [][]byte) []byte {
+	if len(args) != 2 {
+		return NIL
+	}
+	k := string(args[0])
+	v := string(args[1])
 	m[k] = v
 	return []byte("+OK\r\n")
 }
