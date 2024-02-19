@@ -50,16 +50,8 @@ func New[K comparable, V any]() *REDIS[K, V] {
 	}
 
 	go func() {
-		for range time.Tick(1 * time.Millisecond) {
-			fmt.Println("tick every 5 sec")
-			redis.mx.Lock()
-			for k, v := range redis.data {
-				if v.isExpired() {
-					fmt.Println("is expired")
-					delete(redis.data, k)
-				}
-			}
-			redis.mx.Unlock()
+		for range time.Tick(10 * time.Millisecond) {
+			redis.checkExpiry()
 		}
 	}()
 
@@ -81,6 +73,16 @@ func (r *REDIS[K, V]) get(k K, val string) []byte {
 		return NIL
 	}
 	return NIL
+}
+
+func (r *REDIS[K, V]) checkExpiry() {
+	r.mx.Lock()
+	defer r.mx.Unlock()
+	for k, v := range r.data {
+		if v.isExpired() {
+			delete(r.data, k)
+		}
+	}
 }
 
 func getLen(v interface{}) (int, error) {
