@@ -17,12 +17,19 @@ type Value[V any] struct {
 	expiry time.Time
 }
 
+func (v Value[V]) Value() string {
+	return fmt.Sprintf("%s", v.value)
+}
+func (v Value[V]) String() string {
+	return fmt.Sprintf("value:{%v} | expiry: {%v}", v.value, time.Since(v.expiry))
+}
+
 func newVal[V any](value V, expKey string, expiry int) Value[V] {
 	v := Value[V]{}
 	v.value = value
 	key := strings.ToUpper(expKey)
 	var ttl time.Duration
-	if key == "" || key == "PX" {
+	if key == "PX" {
 		ttl = time.Duration(expiry) * time.Millisecond
 	} else if key == "EX" {
 		ttl = time.Duration(expiry) * time.Second
@@ -50,7 +57,7 @@ func New[K comparable, V any]() *REDIS[K, V] {
 	}
 
 	go func() {
-		for range time.Tick(10 * time.Millisecond) {
+		for {
 			redis.checkExpiry()
 		}
 	}()
@@ -64,15 +71,18 @@ func (r *REDIS[K, V]) get(k K, val string) []byte {
 	}
 	r.mx.Lock()
 	defer r.mx.Unlock()
+	fmt.Println("key:", k, "v,ok:", r.data[k])
 	v, ok := r.data[k]
 	if !ok {
+		fmt.Println("not ok", r.data[k])
 		return NIL
 	}
-	if v.isExpired() {
-		delete(r.data, k)
+	length, err := getLen(v)
+	if err != nil {
+		fmt.Println("error length", err)
 		return NIL
 	}
-	return NIL
+	return []byte(fmt.Sprintf("$%d\r\n%s\r\n", length, v.Value()))
 }
 
 func (r *REDIS[K, V]) checkExpiry() {
@@ -80,6 +90,7 @@ func (r *REDIS[K, V]) checkExpiry() {
 	defer r.mx.Unlock()
 	for k, v := range r.data {
 		if v.isExpired() {
+			fmt.Println("deleting")
 			delete(r.data, k)
 		}
 	}
@@ -93,6 +104,8 @@ func getLen(v interface{}) (int, error) {
 		return len(val), nil
 	case map[interface{}][]interface{}:
 		return len(val), nil
+	case Value[string]:
+		return len(val.value), nil
 	default:
 		return 0, fmt.Errorf("value `%v` of unknown type `%T`", val, val)
 	}
@@ -102,6 +115,7 @@ func (r *REDIS[K, V]) set(k K, v Value[V]) []byte {
 	r.mx.Lock()
 	defer r.mx.Unlock()
 	r.data[k] = v
+	fmt.Println(r.data)
 	return OK
 }
 
