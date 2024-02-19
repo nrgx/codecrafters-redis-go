@@ -66,7 +66,7 @@ func New[K comparable, V any]() *REDIS[K, V] {
 func (r *REDIS[K, V]) get(k K, val string) []byte {
 	r.mx.Lock()
 	defer r.mx.Unlock()
-	fmt.Println("key:", k, "v,ok:", r.data[k])
+	fmt.Println("key:", k, "check:", r.data[k])
 	v, ok := r.data[k]
 	if !ok {
 		fmt.Println("not ok", r.data[k])
