@@ -50,7 +50,7 @@ func New[K comparable, V any]() *REDIS[K, V] {
 	}
 
 	go func() {
-		for range time.Tick(5 * time.Second) {
+		for range time.Tick(1 * time.Millisecond) {
 			fmt.Println("tick every 5 sec")
 			redis.mx.Lock()
 			for k, v := range redis.data {
