@@ -9,6 +9,12 @@ import (
 	"strings"
 )
 
+var NIL = []byte("$-1\r\n")
+
+// Global map.
+// Should be guarded by mutex or rewrite as sync.Map for concurrent access
+var m = make(map[string]string)
+
 func main() {
 	listener, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
@@ -48,7 +54,7 @@ func process(conn net.Conn) {
 			os.Exit(1)
 		}
 	}
-} 
+}
 
 func parse(buf []byte) []byte {
 	if len(buf) < 3 {
@@ -69,6 +75,17 @@ func parse(buf []byte) []byte {
 		return pong()
 	case "echo":
 		return echo(commands[1:])
+	case "get":
+		if len(commands) != 2 {
+			return NIL
+		}
+		return get(string(commands[1]))
+	case "set":
+		// there should be other args like `expiry` but for now just key and value
+		if len(commands) != 3 {
+			return NIL
+		}
+		return set(string(commands[1]), string(commands[2]))
 	}
 	return nil
 }
@@ -84,4 +101,17 @@ func echo(args [][]byte) []byte {
 		buf.Write([]byte(fmt.Sprintf("$%d\r\n%s\r\n", len(arg), string(arg))))
 	}
 	return buf.Bytes()
+}
+
+func get(k string) []byte {
+	value, ok := m[k]
+	if !ok {
+		return NIL
+	}
+	return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(value), value))
+}
+
+func set(k, v string) []byte {
+	m[k] = v
+	return []byte("+OK\r\n")
 }
