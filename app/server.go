@@ -16,11 +16,14 @@ const (
 	SET  = "set"
 )
 
-var NIL = []byte("$-1\r\n")
-
-// Global map.
-// Should be guarded by mutex or rewrite as sync.Map for concurrent access
-var m = make(map[string]string)
+var (
+	// Global map.
+	// Should be guarded by mutex or rewrite as sync.Map for concurrent access
+	m = make(map[string]string)
+	// null bulk string RESP encoded
+	NIL = []byte("$-1\r\n")
+	OK  = []byte("+OK\r\n")
+)
 
 func main() {
 	listener, err := net.Listen("tcp", "0.0.0.0:6379")
@@ -111,7 +114,6 @@ func get(args [][]byte) []byte {
 	var v string
 	if len(args) == 2 {
 		v = string(args[1])
-		m[k] = v
 	} else {
 		val, ok := m[k]
 		if !ok {
@@ -129,5 +131,5 @@ func set(args [][]byte) []byte {
 	k := string(args[0])
 	v := string(args[1])
 	m[k] = v
-	return []byte("+OK\r\n")
+	return OK
 }
