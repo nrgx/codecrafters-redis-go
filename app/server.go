@@ -13,15 +13,6 @@ import (
 	"time"
 )
 
-func respify(value string) []byte {
-	fmt.Println("value before respify", value)
-	s := fmt.Sprintf("$%d\r\n%s\r\n", len(value), value)
-	fmt.Println("before byte conversion", s)
-	out := []byte(s)
-	fmt.Printf("respify %s\n", out)
-	return out
-}
-
 type Value struct {
 	value  string
 	expiry time.Time
@@ -69,7 +60,7 @@ func New() *REDIS {
 	}
 
 	go func() {
-		for range time.Tick(100 * time.Millisecond) {
+		for range time.Tick(50 * time.Millisecond) {
 			redis.checkExpiry()
 		}
 	}()
@@ -96,6 +87,9 @@ func (r *REDIS) get(args []string) []byte {
 		if len(args) == 2 {
 			return respify(args[1])
 		}
+		return NIL
+	}
+	if value.isExpired() {
 		return NIL
 	}
 	return respify(value.value)
@@ -202,4 +196,13 @@ func parse(buf []byte) []byte {
 	default:
 		return NIL
 	}
+}
+
+func respify(value string) []byte {
+	fmt.Println("value before respify", value)
+	s := fmt.Sprintf("$%d\r\n%s\r\n", len(value), value)
+	fmt.Println("before byte conversion", s)
+	out := []byte(s)
+	fmt.Printf("respify %s\n", out)
+	return out
 }
