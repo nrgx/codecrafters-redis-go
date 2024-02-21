@@ -6,7 +6,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -178,9 +177,11 @@ func process(conn net.Conn) {
 
 func parse(buf []byte) []byte {
 	args := strings.Fields(string(buf))
-	args = slices.DeleteFunc[[]string, string](args, func(s string) bool {
-		return strings.HasPrefix(s, "*") || strings.HasPrefix(s, "$")
-	})
+	for i, arg := range args {
+		if strings.HasPrefix(arg, "*") || strings.HasPrefix(arg, "$") {
+			args = append(args[:i], args[i+1:]...)
+		}
+	}
 	cmd := args[0]
 	args = args[1 : len(args)-1]
 	fmt.Printf("args:{%s}", args)
