@@ -54,7 +54,7 @@ func New() *REDIS {
 	}
 
 	go func() {
-		for range time.Tick(100 * time.Millisecond) {
+		for range time.Tick(1 * time.Millisecond) {
 			redis.checkExpiry()
 		}
 	}()
