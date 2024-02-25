@@ -105,7 +105,7 @@ func (r *REDIS) pong() []byte {
 
 func (r *REDIS) echo(args []string) []byte {
 	buf := bytes.NewBuffer(nil)
-	for _, arg := range args[1:] {
+	for _, arg := range args {
 		// write $LEN\r\nARG\r\n
 		buf.Write(respify(arg))
 	}

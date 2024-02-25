@@ -28,12 +28,7 @@ func run() {
 }
 
 func respify(value string) []byte {
-	fmt.Println("value before respify", value)
-	s := fmt.Sprintf("$%d\r\n%s\r\n", len(value), value)
-	fmt.Println("before byte conversion", s)
-	out := []byte(s)
-	fmt.Printf("respify %s\n", out)
-	return out
+	return []byte(fmt.Sprintf("$%d\r\n%s\r\n", len(value), value))
 }
 
 func process(conn net.Conn) {
