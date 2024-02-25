@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 	"strings"
 	"sync"
@@ -31,7 +30,6 @@ func newValue(args []string) Value {
 			ttl = time.Duration(expiry) * time.Second
 		}
 		res.expiry = time.Now().Add(ttl)
-		fmt.Println("TTL", ttl)
 	}
 	return res
 }
@@ -90,7 +88,6 @@ func (r *REDIS) get(args []string) []byte {
 
 func (r *REDIS) set(args []string) []byte {
 	if len(args) <= 1 {
-		fmt.Println("given args less than required", args)
 		return NIL
 	}
 	r.mx.Lock()

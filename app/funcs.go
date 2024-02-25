@@ -53,14 +53,12 @@ func process(conn net.Conn) {
 
 func parse(buf []byte) []byte {
 	fields := strings.Fields(string(buf))
-	fmt.Println(fields)
 	var args []string
 	for i := range fields[:len(fields)-1] {
 		if !(strings.HasPrefix(fields[i], "*") || strings.HasPrefix(fields[i], "$")) {
 			args = append(args, fields[i])
 		}
 	}
-	fmt.Println("ARGS", args)
 	cmd := args[0]
 	args = args[1:]
 	switch strings.ToLower(cmd) {
