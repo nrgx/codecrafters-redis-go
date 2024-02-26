@@ -1,5 +1,7 @@
 package main
 
+const MASTER_PORT = 6379
+
 const (
 	PING = "ping"
 	ECHO = "echo"

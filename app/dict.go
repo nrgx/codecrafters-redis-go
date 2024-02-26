@@ -9,13 +9,12 @@ import (
 )
 
 type Value struct {
-	value  string
+	data   string
 	expiry time.Time
 }
 
 func newValue(args []string) Value {
-	value := args[1]
-	res := Value{value: value}
+	res := Value{data: args[1]}
 	if len(args) == 4 {
 		xKey := strings.ToLower(args[2])
 		expiry, err := strconv.Atoi(args[3])
@@ -39,7 +38,7 @@ func (v Value) isExpired() bool {
 }
 
 func (v Value) String() string {
-	return v.value
+	return v.data
 }
 
 type REDIS struct {
@@ -83,7 +82,7 @@ func (r *REDIS) get(args []string) []byte {
 		}
 		return NIL
 	}
-	return respify(value.value)
+	return respify(value.data)
 }
 
 func (r *REDIS) set(args []string) []byte {

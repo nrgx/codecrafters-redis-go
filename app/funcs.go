@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"net"
@@ -9,12 +10,19 @@ import (
 )
 
 func run() {
-	listener, err := net.Listen("tcp", "0.0.0.0:6379")
+	host := "0.0.0.0"
+	port := flag.Int("port", MASTER_PORT, "./spawn_redis_server.sh --port <number>")
+	if port == nil {
+		*port = MASTER_PORT
+	}
+	flag.Parse()
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", host, *port))
 	if err != nil {
 		fmt.Println("error creating tcp server", err.Error())
 		os.Exit(1)
 	}
 	defer listener.Close()
+	fmt.Println("listening on port", *port)
 	for {
 		// accept blocks loop
 		conn, err := listener.Accept()
